@@ -140,6 +140,7 @@ module.exports = function (config, i18n) {
       '/signin',
       '/signin_complete',
       '/signin_permissions',
+      '/signin_unblock',
       '/signup',
       '/signup_complete',
       '/signup_permissions',

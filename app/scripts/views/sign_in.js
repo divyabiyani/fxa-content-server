@@ -31,25 +31,20 @@ define(function (require, exports, module) {
     template: SignInTemplate,
     className: 'sign-in',
 
-    initialize: function (options) {
-      options = options || {};
-
+    initialize: function (options = {}) {
       this._formPrefill = options.formPrefill;
     },
 
     beforeRender: function () {
-      var self = this;
-      self._account = self._suggestedAccount();
+      var account = this._account = this._suggestedAccount();
 
-      self._account.on('change:accessToken', function () {
+      this.listenTo(account, 'change:accessToken', () => {
         // if no access token and password is not visible we need to show the password field.
-        if (! self._account.has('accessToken') && self.$('.password').is(':hidden')) {
+        if (! account.has('accessToken') && this.$('.password').is(':hidden')) {
           // accessToken could be changed async by an external request after render
           // If the ProfileClient fails to get an OAuth token with the current token then reset the view
-          self.chooserAskForPassword = true;
-          return self.render().then(function () {
-            self.setDefaultPlaceholderAvatar();
-          });
+          this.chooserAskForPassword = true;
+          return this.render().then(() => this.setDefaultPlaceholderAvatar());
         }
       });
     },
@@ -114,8 +109,9 @@ define(function (require, exports, module) {
       });
 
       var password = this.getElementValue('.password');
+      var unblockCode = this.getElementValue('#unblock_code');
 
-      return this._signIn(account, password);
+      return this._signIn(account, password, unblockCode);
     },
 
     /**
@@ -126,28 +122,32 @@ define(function (require, exports, module) {
      *     Session token from the account
      * @param {string} [password] - the user's password. Can be null if
      *  user is signing in with a sessionToken.
+     * @param {string} [unblockCode] - an unblock code.
      * @returns {Promise}
      * @private
      */
-    _signIn: function (account, password) {
-      return this.signIn(account, password)
-        .fail(this.onSignInError.bind(this, account, password));
+    _signIn: function (account, password, unblockCode) {
+      return this.signIn(account, password, unblockCode)
+        .fail((err) => this.onSignInError(account, password, err));
     },
 
-    onSignInError: function (account, password, err) {
-      var self = this;
-
+    onSignInError (account, password, err) {
       if (AuthErrors.is(err, 'UNKNOWN_ACCOUNT')) {
-        return self._suggestSignUp(err);
+        return this._suggestSignUp(err);
       } else if (AuthErrors.is(err, 'USER_CANCELED_LOGIN')) {
-        self.logViewEvent('canceled');
+        this.logViewEvent('canceled');
         // if user canceled login, just stop
         return;
       } else if (AuthErrors.is(err, 'ACCOUNT_RESET')) {
-        return self.notifyOfResetAccount(account);
+        return this.notifyOfResetAccount(account);
       }
+
+      this.trigger('signInError', err, account, password);
+
       // re-throw error, it will be handled at a lower level.
-      throw err;
+      if (! err.handled) {
+        throw err;
+      }
     },
 
     _suggestSignUp: function (err) {

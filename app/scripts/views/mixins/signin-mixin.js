@@ -7,23 +7,50 @@
 define(function (require, exports, module) {
   'use strict';
 
-  var AuthErrors = require('lib/auth-errors');
-  var p = require('lib/promise');
-  var VerificationMethods = require('lib/verification-methods');
-  var VerificationReasons = require('lib/verification-reasons');
+  const AuthErrors = require('lib/auth-errors');
+  const p = require('lib/promise');
+  const VerificationMethods = require('lib/verification-methods');
+  const VerificationReasons = require('lib/verification-reasons');
+
+  function createErrorHandler (source, type, handler) {
+    return (err, ...args) => {
+      if (source.is(err, type)) {
+        err.handled = true;
+        this.invokeHandler(handler, err, ...args);
+      }
+    };
+  }
 
   module.exports = {
+    initialize () {
+      this.on('signInError',
+        createErrorHandler(AuthErrors, 'THROTTLED', '_onThrottled'));
+    },
+
+    _onThrottled (err, account, password) {
+      this._throttledAccount = account;
+
+      return account.sendUnblockEmail()
+        .then(() => {
+          this.navigate('signin_unblock', {
+            account: account,
+            password: password
+          });
+        });
+    },
+
     /**
      * Sign in a user
      *
-     * @param {Account} account
+     * @param {Account} account - account being signed in to
      *     @param {String} account.sessionToken
      *     Session token from the account
      * @param {string} [password] - the user's password. Can be null if
      *  user is signing in with a sessionToken.
+     * @param {string} [unblockCode] - an unblock code.
      * @return {object} promise
      */
-    signIn: function (account, password) {
+    signIn: function (account, password, unblockCode) {
       if (! account ||
             account.isDefault() ||
             (! account.has('sessionToken') && ! password)) {
@@ -37,7 +64,8 @@ define(function (require, exports, module) {
             // a resume token is passed in to allow
             // unverified account or session users to complete
             // email verification.
-            resume: self.getStringifiedResumeToken()
+            resume: self.getStringifiedResumeToken(),
+            unblockCode: unblockCode
           });
         })
         .then(function (account) {

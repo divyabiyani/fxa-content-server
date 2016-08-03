@@ -21,7 +21,9 @@ define(function (require, exports, module) {
   describe('views/mixins/signin-mixin', function () {
     it('exports correct interface', function () {
       assert.isObject(SignInMixin);
-      assert.lengthOf(Object.keys(SignInMixin), 2);
+      assert.lengthOf(Object.keys(SignInMixin), 4);
+      assert.isFunction(SignInMixin.initialize);
+      assert.isFunction(SignInMixin._onThrottled);
       assert.isFunction(SignInMixin.signIn);
       assert.isFunction(SignInMixin.onSignInSuccess);
     });
@@ -57,6 +59,7 @@ define(function (require, exports, module) {
             return p();
           }),
           logViewEvent: sinon.spy(),
+          on: sinon.spy(),
           model: model,
           navigate: sinon.spy(),
           onSignInSuccess: SignInMixin.onSignInSuccess,
@@ -68,6 +71,19 @@ define(function (require, exports, module) {
             })
           }
         };
+      });
+
+      describe('initialize', () => {
+        beforeEach(() => {
+          SignInMixin.initialize.call(view);
+        });
+
+        it('hooks up a listener for `signInError`', () => {
+          assert.isTrue(view.on.called);
+          const args = view.on.args[0];
+          assert.equal(args[0], 'signInError');
+          assert.isFunction(args[1]);
+        });
       });
 
       describe('account needs permissions', function () {
@@ -220,6 +236,28 @@ define(function (require, exports, module) {
           assert.equal(args[0], 'confirm_signin');
           assert.strictEqual(args[1].account, account);
           assert.strictEqual(args[1].flow, flow);
+        });
+      });
+
+      describe('_onThrottled', () => {
+        beforeEach(() => {
+          sinon.stub(account, 'sendUnblockEmail', () => p());
+
+          return SignInMixin._onThrottled.call(view, {}, account, 'password');
+        });
+
+        it('sends an unblock email', () => {
+          assert.isTrue(account.sendUnblockEmail.called);
+        });
+
+        it('navigates to `signin_unblock`', () => {
+          assert.isTrue(view.navigate.calledWith(
+            'signin_unblock',
+            {
+              account: account,
+              password: 'password'
+            }
+          ));
         });
       });
 

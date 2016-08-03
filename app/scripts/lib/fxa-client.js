@@ -202,6 +202,7 @@ define(function (require, exports, module) {
      * @param {String} password
      * @param {Relier} relier
      * @param {Object} [options]
+     *   @param {Boolean} [options.code] - Unblock code.
      *   @param {Boolean} [options.customizeSync] - If the relier is Sync,
      *                   whether the user wants to customize which items will
      *                   be synced. Defaults to `false`
@@ -232,6 +233,10 @@ define(function (require, exports, module) {
 
       if (relier.has('redirectTo')) {
         signInOptions.redirectTo = relier.get('redirectTo');
+      }
+
+      if (options.unblockCode) {
+        signInOptions.code = options.unblockCode;
       }
 
       if (options.resume) {
@@ -574,6 +579,26 @@ define(function (require, exports, module) {
 
     deviceDestroy: withClient((client, sessionToken, deviceId) => {
       return client.deviceDestroy(sessionToken, deviceId);
+    }),
+
+    /**
+     * Send an unblock email.
+     *
+     * @returns {promise} resolves with response when complete.
+     */
+    sendUnblockEmail: withClient((client, email) => {
+      return client.sendUnblockCode(email);
+    }),
+
+    /**
+     * Reject an unblock code.
+     *
+     * @param {string} uid - user id
+     * @param {string} code - login authorization code
+     * @returns {promise} resolves when complete.
+     */
+    rejectUnblockCode: withClient((client, uid, code) => {
+      return client.rejectUnblockCode(uid, code);
     })
   };
 

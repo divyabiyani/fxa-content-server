@@ -170,6 +170,7 @@ function (Translator, Session) {
     '../tests/spec/views/settings/display_name',
     '../tests/spec/views/settings/gravatar_permissions',
     '../tests/spec/views/sign_in',
+    '../tests/spec/views/sign_in_unblock',
     '../tests/spec/views/sign_up',
     '../tests/spec/views/sub_panels',
     '../tests/spec/views/support/create_secure_password',

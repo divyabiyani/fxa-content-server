@@ -278,7 +278,7 @@ define(function (require, exports, module) {
         .fail(this.onSignInError.bind(this, account, password));
     },
 
-    onSignInError: function (account, password, err) {
+    onSignInError (account, password, err) {
       // only verified users who already have an account will see
       // the INCORRECT_PASSWORD error.
       if (AuthErrors.is(err, 'INCORRECT_PASSWORD')) {
@@ -299,8 +299,12 @@ define(function (require, exports, module) {
         return this.notifyOfResetAccount(account);
       }
 
+      this.trigger('signInError', err, account, password);
+
       // re-throw error, it will be handled at a lower level.
-      throw err;
+      if (! err.handled) {
+        throw err;
+      }
     },
 
     onEmailBlur: function () {

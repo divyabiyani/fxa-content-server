@@ -36,6 +36,7 @@ define(function (require, exports, module) {
   var ResetPasswordView = require('../views/reset_password');
   var SettingsView = require('../views/settings');
   var SignInView = require('../views/sign_in');
+  var SignInUnblockView = require('../views/sign_in_unblock');
   var SignUpView = require('../views/sign_up');
   var Storage = require('./storage');
   var TosView = require('../views/tos');
@@ -93,6 +94,7 @@ define(function (require, exports, module) {
       'signin(/)': createViewHandler(SignInView),
       'signin_complete(/)': createViewHandler(ReadyView, { type: VerificationReasons.SIGN_IN }),
       'signin_permissions(/)': createViewHandler(PermissionsView, { type: VerificationReasons.SIGN_IN }),
+      'signin_unblock(/)': createViewHandler(SignInUnblockView),
       'signup(/)': createViewHandler(SignUpView),
       'signup_complete(/)': createViewHandler(ReadyView, { type: VerificationReasons.SIGN_UP }),
       'signup_permissions(/)': createViewHandler(PermissionsView, { type: VerificationReasons.SIGN_UP }),

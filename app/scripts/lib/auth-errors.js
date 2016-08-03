@@ -304,6 +304,14 @@ define(function (require, exports, module) {
     INPUT_REQUIRED: {
       errno: 1042,
       message: t('This is a required field')
+    },
+    UNBLOCK_CODE_REQUIRED: {
+      errno: 1043,
+      message: t('Authorization code required')
+    },
+    INVALID_UNBLOCK_CODE: {
+      errno: 1044,
+      message: t('Invalid authorization code')
     }
   };
   /*eslint-enable sorting/sort-object-props*/
