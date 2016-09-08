@@ -299,12 +299,8 @@ define(function (require, exports, module) {
         return this.notifyOfResetAccount(account);
       }
 
-      this.trigger('signInError', err, account, password);
-
       // re-throw error, it will be handled at a lower level.
-      if (! err.handled) {
-        throw err;
-      }
+      throw err;
     },
 
     onEmailBlur: function () {

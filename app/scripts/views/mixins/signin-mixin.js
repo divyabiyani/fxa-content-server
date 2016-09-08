@@ -12,33 +12,7 @@ define(function (require, exports, module) {
   const VerificationMethods = require('lib/verification-methods');
   const VerificationReasons = require('lib/verification-reasons');
 
-  function createErrorHandler (source, type, handler) {
-    return (err, ...args) => {
-      if (source.is(err, type)) {
-        err.handled = true;
-        this.invokeHandler(handler, err, ...args);
-      }
-    };
-  }
-
   module.exports = {
-    initialize () {
-      this.on('signInError',
-        createErrorHandler(AuthErrors, 'THROTTLED', '_onThrottled'));
-    },
-
-    _onThrottled (err, account, password) {
-      this._throttledAccount = account;
-
-      return account.sendUnblockEmail()
-        .then(() => {
-          this.navigate('signin_unblock', {
-            account: account,
-            password: password
-          });
-        });
-    },
-
     /**
      * Sign in a user
      *
@@ -67,6 +41,17 @@ define(function (require, exports, module) {
             resume: self.getStringifiedResumeToken(),
             unblockCode: unblockCode
           });
+        })
+        .fail((err) => {
+          if (AuthErrors.is(err, 'THROTTLED')) {
+            return this.navigate('signin_unblock', {
+              account: account,
+              password: password
+            });
+          }
+
+          // re-throw error, it'll be handled elsewhere.
+          throw err;
         })
         .then(function (account) {
           if (self._formPrefill) {

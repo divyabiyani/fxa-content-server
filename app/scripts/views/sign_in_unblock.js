@@ -5,6 +5,8 @@
 define(function (require, exports, module) {
   'use strict';
 
+  const Account = require('models/account');
+  const AuthErrors = require('lib/auth-errors');
   const Cocktail = require('cocktail');
   const ExternalLinksMixin = require('views/mixins/external-links-mixin');
   const FormView = require('views/form');
@@ -18,12 +20,16 @@ define(function (require, exports, module) {
     template: Template,
     className: 'sign-in-unblock',
 
-    events: {
-      'click #resend': preventDefaultThen('resend')
+    getAccount () {
+      return this.model.get('account') || new Account({ email: 'testuser@testuser.com' });
     },
 
-    getAccount () {
-      return this.model.get('account');
+    context () {
+      const email = this.getAccount().get('email');
+
+      return {
+        email
+      };
     },
 
     submit () {
@@ -35,33 +41,21 @@ define(function (require, exports, module) {
         .fail((err) => this.onSignInError(account, password, err));
     },
 
-    context () {
-      const email = this.getAccount().get('email');
-
-      return {
-        email
-      };
-    },
-
     onSignInError (account, password, err) {
-      this.navigate('signin', {
-        email: account.get('email'),
-        error: err
-      });
+      if (AuthErrors.is(err, 'INVALID_PASSWORD')) {
+        // The user must go enter the correct password this time.
+        this.navigate('signin', {
+          email: account.get('email'),
+          error: err
+        });
+      } else {
+        // re-throw, it'll be displayed at a lower level.
+        throw err;
+      }
     },
 
     resend () {
-      // a bit screwy, the ResendMixin was made to be used on FormViews. I'm
-      // trying to avoid a FormView and instead do things the right way.
-      return this.beforeSubmit()
-        .then((shouldResend) => {
-          if (! shouldResend) {
-            return;
-          }
-
-          return this.getAccount().sendUnblockEmail()
-            .then(() => this.displaySuccess());
-        });
+      return this.getAccount().sendUnblockEmail();
     }
   });
 

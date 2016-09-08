@@ -79,34 +79,22 @@ define(function (require, exports, module) {
     });
 
     describe('resend', () => {
-      let shouldResend;
       beforeEach(() => {
-        sinon.stub(view, 'beforeSubmit', () => p(shouldResend));
+        sinon.stub(account, 'sendUnblockEmail', () => {
+          return p();
+        });
 
-        sinon.stub(account, 'sendUnblockEmail', () => p());
+        return view.resend();
       });
 
-      describe('should not resend', () => {
-        beforeEach(() => {
-          shouldResend = false;
-
-          return view.resend();
-        });
-
-        it('should not send the unblock email', () => {
-          assert.isFalse(account.sendUnblockEmail.called);
-        });
+      it('delegate to the account', () => {
+        assert.isTrue(account.sendUnblockEmail.called);
       });
+    });
 
-      describe('should resend', () => {
-        beforeEach(() => {
-          shouldResend = true;
-
-          return view.resend();
-        });
-
-        it('should send the unblock email', () => {
-          assert.isTrue(account.sendUnblockEmail.called);
+    describe('submit', () => {
+      describe('success', () => {
+        it('delegates to the account, with the unblockCode', () => {
         });
       });
     });
