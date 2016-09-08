@@ -33,6 +33,7 @@ define(function (require, exports, module) {
   var PermissionsView = require('../views/permissions');
   var PpView = require('../views/pp');
   var ReadyView = require('../views/ready');
+  var RejectUnblockCode = require('views/reject_unblock_code');
   var ResetPasswordView = require('../views/reset_password');
   var SettingsView = require('../views/settings');
   var SignInView = require('../views/sign_in');
@@ -78,6 +79,7 @@ define(function (require, exports, module) {
       'oauth/force_auth(/)': createViewHandler(ForceAuthView),
       'oauth/signin(/)': createViewHandler(SignInView),
       'oauth/signup(/)': createViewHandler(SignUpView),
+      'reject_unblock_code': createViewHandler(RejectUnblockCode),
       'reset_password(/)': createViewHandler(ResetPasswordView),
       'reset_password_complete(/)': createViewHandler(ReadyView, { type: VerificationReasons.PASSWORD_RESET }),
       'settings(/)': createViewHandler(SettingsView),

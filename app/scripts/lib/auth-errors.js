@@ -312,6 +312,10 @@ define(function (require, exports, module) {
     INVALID_UNBLOCK_CODE: {
       errno: 1044,
       message: t('Invalid authorization code')
+    },
+    DAMAGED_REJECT_UNBLOCK_LINK: {
+      errno: 1045,
+      message: t('Damaged link')
     }
   };
   /*eslint-enable sorting/sort-object-props*/

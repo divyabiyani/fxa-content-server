@@ -126,6 +126,7 @@ module.exports = function (config, i18n) {
       '/oauth/force_auth',
       '/oauth/signin',
       '/oauth/signup',
+      '/reject_unblock_code',
       '/reset_password',
       '/reset_password_complete',
       '/settings',
