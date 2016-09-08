@@ -72,6 +72,8 @@ define(function (require, exports, module) {
     },
 
     afterRender: function () {
+      this.$('input').upgrade();
+
       // Firefox has a strange issue where if the previous
       // screen was submit using the keyboard, the `enter` key's
       // `keyup` event fires here on the element that receives

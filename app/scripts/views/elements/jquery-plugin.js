@@ -17,6 +17,7 @@ define(function (require, exports, module) {
   const checkboxInput = require('views/elements/checkbox-input');
   const defaultElement = require('views/elements/default');
   const emailInput = require('views/elements/email-input');
+  const numberInput = require('views/elements/number-input');
   const passwordInput = require('views/elements/password-input');
   const textInput = require('views/elements/text-input');
   const unblockCodeInput = require('views/elements/unblock-code-input');
@@ -27,6 +28,7 @@ define(function (require, exports, module) {
     passwordInput,
     textInput,
     unblockCodeInput,
+    numberInput,
     defaultElement // defaultElement is last since it is the fallback.
   ];
 
@@ -46,6 +48,13 @@ define(function (require, exports, module) {
       return elementHelper.val.apply(this, arguments);
     } else {
       return $.fn.__val.apply(this, arguments);
+    }
+  };
+
+  $.fn.upgrade = function () {
+    const elementHelper = getHelper(this);
+    if (elementHelper.upgrade) {
+      return elementHelper.upgrade.apply(this);
     }
   };
 });

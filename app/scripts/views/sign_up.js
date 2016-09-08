@@ -85,7 +85,6 @@ define(function (require, exports, module) {
       return coppaView.render()
         .then(function () {
           self.trackChildView(coppaView);
-          coppaView.on('submit', self.validateAndSubmit.bind(self));
 
           self._coppa = coppaView;
         });

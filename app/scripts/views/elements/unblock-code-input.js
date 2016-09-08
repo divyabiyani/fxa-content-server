@@ -6,22 +6,25 @@ define(function (require, exports, module) {
   'use strict';
 
   const AuthErrors = require('lib/auth-errors');
+  const numberInput = require('views/elements/number-input');
 
-  return {
-    match ($el) {
-      return $el.attr('type') === 'number' && $el.hasClass('unblock-code');
-    },
+  const element = Object.create(numberInput);
 
-    validate () {
-      const isRequired = typeof this.attr('required') !== 'undefined';
-      const value = this.val();
+  element.match = function ($el) {
+    return $el.attr('type') === 'number' && $el.hasClass('unblock-code');
+  };
 
-      if (isRequired && ! value.length) {
-        throw AuthErrors.toError('UNBLOCK_CODE_REQUIRED');
-      } else if (value.length !== 6) {
-        throw AuthErrors.toError('INVALID_UNBLOCK_CODE');
-      }
+  element.validate = function () {
+    const isRequired = typeof this.attr('required') !== 'undefined';
+    const value = this.val();
+
+    if (isRequired && ! value.length) {
+      throw AuthErrors.toError('UNBLOCK_CODE_REQUIRED');
+    } else if (value.length !== 6) {
+      throw AuthErrors.toError('INVALID_UNBLOCK_CODE');
     }
   };
+
+  module.exports = element;
 });
 
