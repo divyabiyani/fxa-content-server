@@ -202,7 +202,6 @@ define(function (require, exports, module) {
      * @param {String} password
      * @param {Relier} relier
      * @param {Object} [options]
-     *   @param {Boolean} [options.code] - Unblock code.
      *   @param {Boolean} [options.customizeSync] - If the relier is Sync,
      *                   whether the user wants to customize which items will
      *                   be synced. Defaults to `false`
@@ -215,6 +214,7 @@ define(function (require, exports, module) {
      *   @param {String} [options.sessionTokenContext] - The context for which
      *                   the session token is being created. Defaults to the
      *                   relier's context.
+     *   @param {String} [options.unblockCode] - Unblock code.
      * @returns {Promise}
      */
     signIn: withClient((client, originalEmail, password, relier, options = {}) => {
@@ -236,7 +236,7 @@ define(function (require, exports, module) {
       }
 
       if (options.unblockCode) {
-        signInOptions.code = options.unblockCode;
+        signInOptions.unblockCode = options.unblockCode;
       }
 
       if (options.resume) {

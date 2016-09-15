@@ -24,6 +24,10 @@ define(function (require, exports, module) {
       return this.model.get('account') || new Account({ email: 'testuser@testuser.com' });
     },
 
+    beforeRender () {
+      return this._sendUnblockEmail();
+    },
+
     context () {
       const email = this.getAccount().get('email');
 
@@ -55,6 +59,10 @@ define(function (require, exports, module) {
     },
 
     resend () {
+      return this._sendUnblockEmail()
+    },
+
+    _sendUnblockEmail () {
       return this.getAccount().sendUnblockEmail();
     }
   });

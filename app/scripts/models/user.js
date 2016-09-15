@@ -352,6 +352,7 @@ define(function (require, exports, module) {
      * @param {string} password - the user's password
      * @param {object} relier - relier being signed in to
      * @param {object} [options] - options
+     * @param {string} [options.unblockCode] - unblock code
      * @returns {promise} - resolves when complete
      */
     signInAccount: function (account, password, relier, options) {

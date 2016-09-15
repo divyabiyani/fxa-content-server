@@ -42,17 +42,6 @@ define(function (require, exports, module) {
             unblockCode: unblockCode
           });
         })
-        .fail((err) => {
-          if (AuthErrors.is(err, 'THROTTLED')) {
-            return this.navigate('signin_unblock', {
-              account: account,
-              password: password
-            });
-          }
-
-          // re-throw error, it'll be handled elsewhere.
-          throw err;
-        })
         .then(function (account) {
           if (self._formPrefill) {
             self._formPrefill.clear();
@@ -68,7 +57,18 @@ define(function (require, exports, module) {
           }
 
           return self.onSignInSuccess(account);
-        });
+        })
+        .fail((err) => {
+          if (AuthErrors.is(err, 'THROTTLED')) {
+            return this.navigate('signin_unblock', {
+              account: account,
+              password: password
+            });
+          }
+
+          // re-throw error, it'll be handled elsewhere.
+          throw err;
+        })
     },
 
     onSignInSuccess: function (account) {

@@ -3,7 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /**
- * A model to hold reject-unblock-code data
+ * A model to hold report-sign-in data. Model has a `report` function
+ * which will call the appropriate reporting endpoint on the auth server.
  */
 
 define(function (require, exports, module) {
@@ -14,13 +15,18 @@ define(function (require, exports, module) {
 
   module.exports = VerificationInfo.extend({
     defaults: {
-      unblockCodeId: null,
+      unblockCode: null,
       uid: null
     },
 
     validation: {
       uid: () => true,
-      unblockCodeId: () => true
+      unblockCode: () => true
+    },
+
+    report (user) {
+      const account = user.initAccount({ uid: this.get('uid') });
+      return account.rejectUnblockCode(this.get('unblockCode'));
     }
   });
 });
